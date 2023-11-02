@@ -1,27 +1,36 @@
-name: Code Review with OpenAI
+name: Python Build
+
 on:
-  pull_request:
-    types:
-      - opened
-      - synchronize
+  push:
+    branches:
+      - main  # Trigger the workflow on pushes to the main branch
 
 jobs:
-  code-review:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2  # Check out the code from your repository
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.x
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.12  # Specify the Python version you want to use
 
-      - name: Install Dependencies
-        run: pip install openai
+    - name: Install Dependencies
+      run: |
+        pip install --upgrade pip
+        pip install -r requirements.txt  # Install your project's dependencies
+      env:
+        CFLAGS: "-Wno-deprecated-declarations"  # Disable certain warnings during compilation
 
-      - name: Code Review with OpenAI
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        run: python code_review.py ${{ github.event.pull_request.number }}
+    - name: Build and Test
+      run: |
+        # Run your build and test commands here
+        # For example:
+        python -m unittest discover -s tests
+
+    # Add more steps as needed for your specific workflow
+
+# Additional workflow configuration as required
